@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
   }, [scrolled]);
   
   const navItems = [
-    { name: 'Žemėlapis', path: '/', icon: MapPin },
+    { name: 'Pagrindinis', path: '/', icon: MapPin },
     { name: 'Lenktynės', path: '/races', icon: Flag },
     { name: 'Draugai', path: '/friends', icon: Users },
     { name: 'Būrimas', path: '/fortune', icon: Moon },
