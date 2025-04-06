@@ -8,6 +8,9 @@ import Profile from "./pages/Profile";
 import ResetPasswordPage from "./pages/ResetPassword";
 import Navbar from "./components/Navbar";
 import ForgotPasswordPage from "./pages/ForgotPassword";
+import Footer from "./components/Footer";
+import LogInPage from "./pages/LogInPage";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
@@ -17,12 +20,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/resetpassword" element={<ResetPasswordPage />} />
-          <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
-        </Routes>
+        <div className="flex flex-col min-h-svh justify-between">
+          <Navbar />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/resetpassword" element={<ResetPasswordPage />} />
+                <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+                <Route path="/login" element={<LogInPage />} /> 
+              </Routes>
+            </main>
+          <Footer />
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

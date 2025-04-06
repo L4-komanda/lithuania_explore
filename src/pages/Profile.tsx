@@ -67,7 +67,7 @@ const ProfilePage: React.FC = () => {
   const selectedRaceDetails = selectedRace ? getRaceDetails(selectedRace) : null;
 
   return (
-    <div className="min-h-screen pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
+    <div className="pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
