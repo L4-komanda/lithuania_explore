@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import ForgotPasswordPage from "./pages/ForgotPassword";
 import Footer from "./components/Footer";
 import LogInPage from "./pages/LogInPage";
 import { useEffect, useState } from "react";
+import Complaints from "./pages/Complaints";
 
 const queryClient = new QueryClient();
 
@@ -22,14 +22,15 @@ const App = () => (
       <BrowserRouter>
         <div className="flex flex-col min-h-svh justify-between">
           <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/resetpassword" element={<ResetPasswordPage />} />
-                <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
-                <Route path="/login" element={<LogInPage />} /> 
-              </Routes>
-            </main>
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/resetpassword" element={<ResetPasswordPage />} />
+              <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+              <Route path="/login" element={<LogInPage />} />
+              <Route path="/complaints" element={<Complaints />} />
+            </Routes>
+          </main>
           <Footer />
         </div>
       </BrowserRouter>
