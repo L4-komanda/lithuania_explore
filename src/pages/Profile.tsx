@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { currentUser, races, friends } from "@/lib/data";
+import { useNavigate } from 'react-router-dom';
 import {
   User,
   MapPin,
@@ -26,8 +27,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Navigate } from "react-router-dom";
 
 const ProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
     window.scrollTo({ top: 0 });
@@ -134,7 +137,10 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </div>
 
-                <button className="flex items-center text-sm gap-1 text-primary hover:text-primary/80 font-medium">
+                <button
+                  onClick={() => navigate('/editprofile')}
+                  className="flex items-center text-sm gap-1 text-primary hover:text-primary/80 font-medium"
+                >
                   <Settings className="w-4 h-4" />
                   <span>Redaguoti profilį</span>
                 </button>

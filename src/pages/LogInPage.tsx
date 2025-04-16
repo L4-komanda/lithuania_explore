@@ -75,6 +75,8 @@ const LogInPage = () => {
         navigate('/forgotpassword');
   };
 
+
+
   return (
     <div className="pt-24 pb-0 animate-fade-in">
       <div className="flex-grow flex items-center justify-center bg-white px-4 py-12">

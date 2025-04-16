@@ -9,9 +9,11 @@ import Navbar from "./components/Navbar";
 import ForgotPasswordPage from "./pages/ForgotPassword";
 import Footer from "./components/Footer";
 import LogInPage from "./pages/LogInPage";
+import RegisterPage from "./pages/RegisterPage";
 import { useEffect, useState } from "react";
 import Complaints from "./pages/Complaints";
 import Index from "./pages/Index";
+import EditProfile from "./pages/EditProfile";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const App = () => (
               <Route path="/login" element={<LogInPage />} />
               <Route path="/complaints" element={<Complaints />} />
               <Route path="/" element={<Index />} />
+              <Route path="/editprofile" element={<EditProfile />} /> 
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </main>
           <Footer />
