@@ -69,6 +69,19 @@ const EditProfile = () => {
       });
       return;
     }
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.setItem('loggedIn', 'false');
+  
+    toast({
+      variant: 'destructive',
+      title: 'Profilis ištrintas',
+      description: 'Jūsų paskyra buvo pašalinta.',
+    });
+    navigate('/');
+    window.location.reload();
+  
+  
     
 
     localStorage.removeItem('user');
@@ -78,7 +91,9 @@ const EditProfile = () => {
       title: 'Profilis ištrintas',
       description: 'Jūsų paskyra buvo pašalinta.',
     });
-    navigate('/login');
+    localStorage.removeItem('user');
+    localStorage.setItem('loggedIn', 'false');
+    navigate('/');
   };
 
   return (
