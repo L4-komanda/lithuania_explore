@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import LogInPage from "./pages/LogInPage";
 import { useEffect, useState } from "react";
 import Complaints from "./pages/Complaints";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
               <Route path="/login" element={<LogInPage />} />
               <Route path="/complaints" element={<Complaints />} />
+              <Route path="/" element={<Index />} />
             </Routes>
           </main>
           <Footer />

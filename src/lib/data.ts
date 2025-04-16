@@ -1,5 +1,5 @@
 
-import { Race, User, Friend } from './types';
+import { Race, User, Friend, Attraction } from './types';
 
 // Mock current user
 export const currentUser: User = {
@@ -78,3 +78,67 @@ export const friends: Friend[] = [
     status: 'online'
   }
 ];
+
+export const attractions: Attraction[] = [
+  {
+    id: 'attraction-1',
+    name: 'Gedimino pilis',
+    description: 'Gedimino pilis – Vilniaus miesto simbolis, Lietuvos valstybingumo simbolis.',
+    image: 'https://www.govilnius.lt/images/5ea6aeeb4a97c4372591f47e?w=750&h=500',
+    location: {
+      lat: 54.4872,
+      lng: 25.8904
+    },
+    rating: 4.8,
+    category: 'Istoriniai paminklai'
+  },
+  {
+    id: 'attraction-2',
+    name: 'Trakai',
+    description: 'Trakų pilis – vienintelė pilis Rytų Europoje, pastatyta ant salos.',
+    image: 'https://media-cdn.tripadvisor.com/media/photo-c/1280x250/05/29/78/60/trakai-castle.jpg',
+    location: {
+      lat: 54.3458,
+      lng: 25.3335
+    },
+    rating: 4.9,
+    category: 'Istoriniai paminklai'
+  },
+  {
+    id: 'attraction-3',
+    name: 'Kryžių kalnas',
+    description: 'Kryžių kalnas – unikalus sakralinis paminklas Lietuvoje, garsėjantis daugybe kryžių.',
+    image: 'https://www.turistopasaulis.lt/wp-content/uploads/2013/10/kry%C5%BEi%C5%B3-kalnas-01.jpg',
+    location: {
+      lat: 56.0153,
+      lng: 23.4169
+    },
+    rating: 4.7,
+    category: 'Religinis paveldas'
+  },
+  {
+    id: 'attraction-4',
+    name: 'Curonian Spit',
+    description: 'Kuršių nerija – unikalus gamtos ir kultūros paminklas, įtrauktas į UNESCO pasaulio paveldo sąrašą.',
+    image: 'https://images.unsplash.com/photo-1629124614562-b30ae86cb743?q=80&w=1374&auto=format&fit=crop',
+    location: {
+      lat: 55.2747,
+      lng: 20.9715
+    },
+    rating: 4.9,
+    category: 'Gamtos paminklai'
+  },
+  {
+    id: 'attraction-5',
+    name: 'Vilniaus senamiestis',
+    description: 'Vilniaus senamiestis – vienas didžiausių ir gražiausių Rytų Europos senamiesčių.',
+    image: 'https://images.unsplash.com/photo-1546636889-ba9fdd63583e?q=80&w=1515&auto=format&fit=crop',
+    location: {
+      lat: 54.3872,
+      lng: 25.7904
+    },
+    rating: 4.8,
+    category: 'Senamiesčiai'
+  }
+];
+

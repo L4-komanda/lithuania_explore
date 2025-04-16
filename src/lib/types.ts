@@ -29,3 +29,17 @@ export interface Friend {
   avatar: string;
   status: 'online' | 'offline';
 }
+
+export interface Attraction {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  rating: number;
+  category: string;
+}
+
