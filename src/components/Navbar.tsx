@@ -91,6 +91,8 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     setLoggedIn(false);
     toggleLoggedInDropdown(null);
+    setTimeout(() => navigate('/'), 150);
+    setTimeout(() => window.location.reload(), 150);
   }
 
   const closeLoggedInDropdownWithDelay = () => {

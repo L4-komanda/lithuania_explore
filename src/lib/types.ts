@@ -39,6 +39,7 @@ export interface Attraction {
     lat: number;
     lng: number;
   };
+  adress: string;
   rating: number;
   category: string;
 }

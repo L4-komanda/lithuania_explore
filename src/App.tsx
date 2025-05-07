@@ -16,12 +16,15 @@ import { useEffect, useState } from "react";
 import Complaints from "./pages/Complaints";
 import Index from "./pages/Index";
 import EditProfile from "./pages/EditProfile";
+import { UserActionProvider } from "./lib/UserActionContext"
+import { LogIn } from "lucide-react";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+    <UserActionProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -44,6 +47,7 @@ const App = () => (
           <Footer />
         </div>
       </BrowserRouter>
+      </UserActionProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
