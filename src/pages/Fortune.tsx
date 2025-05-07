@@ -177,7 +177,7 @@ const FortunePage: React.FC = () => {
                 <Label>Delno skenavimas</Label>
               </div>
               <div 
-                className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer hover:border-primary transition-colors relative" 
+                className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-3 cursor-pointer hover:border-primary transition-colors relative" 
                 style={{height: "220px"}}
               >
                 {scanStage === 'ready' && !scanResult && (
