@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Complaints from "./pages/Complaints";
 import Index from "./pages/Index";
 import EditProfile from "./pages/EditProfile";
+import WaitingPage from "./pages/WaitingPage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Routes>
               <Route path="/profile" element={<Profile />} />
               <Route path="/races" element={<Races />} />
+              <Route path="/waiting" element={<WaitingPage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
               <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
