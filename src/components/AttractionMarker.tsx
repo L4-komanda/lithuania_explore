@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Attraction } from "@/lib/types";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUserActions } from '@/lib/UserActionContext';
 
 interface AttractionMarkerProps {
   attraction: Attraction;
@@ -15,7 +16,9 @@ const AttractionMarker: React.FC<AttractionMarkerProps> = ({
   onClick,
 }) => {
   const [hovered, setHovered] = useState(false);
+  const { hasVisited } = useUserActions();
 
+  const isVisited = hasVisited(attraction.id);
   const style = {
     left: `${((attraction.location.lng - 20) / 8) * 100}%`,
     top: `${((56.5 - attraction.location.lat) / 3) * 100}%`,
@@ -36,15 +39,35 @@ const AttractionMarker: React.FC<AttractionMarkerProps> = ({
       >
         {/* Pin */}
         <div className="relative cursor-pointer">
-          <MapPin
+        <MapPin 
             className={cn(
-              "w-10 h-10 drop-shadow-md transition-colors",
-              isSelected
-                ? "text-[#4ED07E]"
-                : "text-[#4ED07E] hover:text-[#4ED07E]"
-            )}
-            fill={isSelected ? "rgba(59, 130, 246, 0.2)" : "transparent"}
+              "w-8 h-8 drop-shadow-md transition-colors",
+              isVisited 
+                ? "text-green-500" 
+                : isSelected 
+                  ? "text-primary" 
+                  : "text-primary/80 hover:text-primary"
+            )} 
+            fill={isSelected ? "rgba(59, 130, 246, 0.2)" : isVisited ? "rgba(34, 197, 94, 0.2)" : "transparent"} 
           />
+
+          {/* Rating circle */}
+          <div
+            className={cn(
+              "absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white text-xs font-semibold flex items-center justify-center shadow-sm transition-transform",
+              isSelected || hovered ? "scale-110" : "scale-100"
+            )}
+          >
+            {attraction.rating}
+          </div>
+          {/* Visited badge */}
+          {isVisited && (
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-3 h-3">
+                <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Tooltip that appears on hover or selection */}
@@ -60,6 +83,11 @@ const AttractionMarker: React.FC<AttractionMarkerProps> = ({
           <div className="text-xs text-muted-foreground">
             {attraction.category}
           </div>
+          {isVisited && (
+            <div className="mt-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full w-fit">
+              Aplankyta
+            </div>
+          )}
         </div>
       </div>
     </div>

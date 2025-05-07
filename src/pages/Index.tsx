@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Map from "@/components/Map";
-import AttractionGallery from "@/components/AttractionGallery";
-import { attractions } from "@/lib/data";
-import { MapPin, Image } from "lucide-react";
-import { Attraction as AttractionType } from "@/lib/types";
+import React, { useEffect, useState } from 'react';
+import Map from '@/components/Map';
+import AttractionGallery from '@/components/AttractionGallery';
+import { attractions } from '@/lib/data';
+import { MapPin, Image } from 'lucide-react';
+import { Attraction as AttractionType } from '@/lib/types';
+import { useUserActions } from '@/lib/UserActionContext';
+
 
 const IndexPage: React.FC = () => {
   const [selectedAttraction, setSelectedAttraction] =
     useState<AttractionType | null>(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const { hasVisited } = useUserActions();
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
@@ -62,7 +65,12 @@ const IndexPage: React.FC = () => {
                     <span>{attraction.rating}</span>
                     <span className="ml-1 text-yellow-500">★</span>
                   </div>
-                  <button
+                  {hasVisited(attraction.id) && (
+                    <div className="absolute top-3 left-3 py-1 px-2 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                      Aplankyta
+                    </div>
+                  )}
+                  <button 
                     onClick={() => openGallery(attraction)}
                     className="absolute bottom-3 right-3 p-2 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white transition-colors"
                   >

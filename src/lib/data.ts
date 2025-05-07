@@ -89,6 +89,7 @@ export const attractions: Attraction[] = [
       lat: 54.4872,
       lng: 25.8904
     },
+    adress: 'Arsenalo g. 5, Vilnius, 01143 Vilniaus m. sav.0',
     rating: 4.8,
     category: 'Istoriniai paminklai'
   },
@@ -96,11 +97,12 @@ export const attractions: Attraction[] = [
     id: 'attraction-2',
     name: 'Trakai',
     description: 'Trakų pilis – vienintelė pilis Rytų Europoje, pastatyta ant salos.',
-    image: 'https://media-cdn.tripadvisor.com/media/photo-c/1280x250/05/29/78/60/trakai-castle.jpg',
     location: {
-      lat: 54.3458,
+      lat: 54.3458, 
       lng: 25.3335
     },
+    image: 'https://media-cdn.tripadvisor.com/media/photo-c/1280x250/05/29/78/60/trakai-castle.jpg',
+    adress: 'Karaimų g. 43C, Trakai, 21104 Trakų r. sav.',
     rating: 4.9,
     category: 'Istoriniai paminklai'
   },
@@ -113,18 +115,21 @@ export const attractions: Attraction[] = [
       lat: 56.0153,
       lng: 23.4169
     },
-    rating: 4.7,
+    adress:'Jurgaičiai, 81439 Šiaulių r. sav.',
+    rating: 4.9,
     category: 'Religinis paveldas'
   },
   {
     id: 'attraction-4',
-    name: 'Curonian Spit',
-    description: 'Kuršių nerija – unikalus gamtos ir kultūros paminklas, įtrauktas į UNESCO pasaulio paveldo sąrašą.',
-    image: 'https://s1.15min.lt/static/cache/MTkyMHgxMDgwLDY5NXg1NDYsNjE2MTg5LG9yaWdpbmFsLCxpZD01Njg5Njc4JmRhdGU9MjAyMCUyRjEyJTJGMDIsMTQ3Mzk1MTMyNg==/kursiu-nerija-5fc78f96c7ec9.jpg',
+
+    name: 'Aukštumalos pelkė',
+    description: 'Aukštumalos pelkė – viena didžiausių pelkių Lietuvoje, turinti unikalią ekosistemą.',
+    image: 'https://photos.trip.lt/5ccacad3-7f56-4b47-aa88-987929e58713/3840x2160?crop=true',
     location: {
       lat: 55.2747,
       lng: 20.9715
     },
+    adress: '99100 Šilutės r. sav.',
     rating: 4.9,
     category: 'Gamtos paminklai'
   },
@@ -132,11 +137,12 @@ export const attractions: Attraction[] = [
     id: 'attraction-5',
     name: 'Vilniaus senamiestis',
     description: 'Vilniaus senamiestis – vienas didžiausių ir gražiausių Rytų Europos senamiesčių.',
-    image: 'https://i2-prod.dailystar.co.uk/article33062330.ece/ALTERNATES/s615b/0_Vilnius4.jpg',
+    image: 'https://m.atostogoskaime.lt/data/gallery/large/3_010.jpg',
     location: {
       lat: 54.3872,
       lng: 25.7904
     },
+    adress: 'Vilnius, Vilniaus m. sav.',
     rating: 4.8,
     category: 'Senamiesčiai'
   }

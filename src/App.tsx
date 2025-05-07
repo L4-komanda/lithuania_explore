@@ -16,15 +16,18 @@ import { useEffect, useState } from "react";
 import Complaints from "./pages/Complaints";
 import Index from "./pages/Index";
 import EditProfile from "./pages/EditProfile";
+import { UserActionProvider } from "./lib/UserActionContext"
+import { LogIn } from "lucide-react";
+import MyRoutes from "./pages/MyRoutes";
 import WaitingPage from "./pages/WaitingPage";
 import FortunePage from "./pages/Fortune";
-
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+    <UserActionProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -41,7 +44,8 @@ const App = () => (
               <Route path="/login" element={<LogInPage />} />
               <Route path="/complaints" element={<Complaints />} />
               <Route path="/" element={<Index />} />
-              <Route path="/editprofile" element={<EditProfile />} />
+              <Route path="/myroutes" element={<MyRoutes />} />
+              <Route path="/editprofile" element={<EditProfile />} /> 
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/fortune" element={<FortunePage />} />
 
@@ -50,6 +54,7 @@ const App = () => (
           <Footer />
         </div>
       </BrowserRouter>
+      </UserActionProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
