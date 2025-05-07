@@ -43,4 +43,19 @@ export interface Attraction {
   rating: number;
   category: string;
 }
+export interface RoutePoint {
+  attraction: Attraction;
+  distanceToPrev: number | null;
+  timeByCarToPrev: number | null; 
+  timeByFootToPrev: number | null;
+}
 
+export interface Route {
+  id: string;
+  name: string;
+  startPoint: string;
+  points: RoutePoint[];
+  totalDistance: number;
+  totalTimeByFoot: number;
+  totalTimeByCar: number;
+}

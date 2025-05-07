@@ -18,6 +18,7 @@ import Index from "./pages/Index";
 import EditProfile from "./pages/EditProfile";
 import { UserActionProvider } from "./lib/UserActionContext"
 import { LogIn } from "lucide-react";
+import MyRoutes from "./pages/MyRoutes";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/login" element={<LogInPage />} />
               <Route path="/complaints" element={<Complaints />} />
               <Route path="/" element={<Index />} />
+              <Route path="/myroutes" element={<MyRoutes />} />
               <Route path="/editprofile" element={<EditProfile />} /> 
               <Route path="/register" element={<RegisterPage />} />
             </Routes>

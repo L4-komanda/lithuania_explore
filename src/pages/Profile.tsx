@@ -130,7 +130,7 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div className="h-10 border-l border-border"></div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold">0</div>
+                    <div className="text-lg font-semibold">1</div>
                     <div className="text-xs text-muted-foreground">
                       Aplankytos vietos
                     </div>
