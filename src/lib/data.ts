@@ -120,7 +120,7 @@ export const attractions: Attraction[] = [
     id: 'attraction-4',
     name: 'Curonian Spit',
     description: 'Kuršių nerija – unikalus gamtos ir kultūros paminklas, įtrauktas į UNESCO pasaulio paveldo sąrašą.',
-    image: 'https://images.unsplash.com/photo-1629124614562-b30ae86cb743?q=80&w=1374&auto=format&fit=crop',
+    image: 'https://s1.15min.lt/static/cache/MTkyMHgxMDgwLDY5NXg1NDYsNjE2MTg5LG9yaWdpbmFsLCxpZD01Njg5Njc4JmRhdGU9MjAyMCUyRjEyJTJGMDIsMTQ3Mzk1MTMyNg==/kursiu-nerija-5fc78f96c7ec9.jpg',
     location: {
       lat: 55.2747,
       lng: 20.9715
@@ -132,7 +132,7 @@ export const attractions: Attraction[] = [
     id: 'attraction-5',
     name: 'Vilniaus senamiestis',
     description: 'Vilniaus senamiestis – vienas didžiausių ir gražiausių Rytų Europos senamiesčių.',
-    image: 'https://images.unsplash.com/photo-1546636889-ba9fdd63583e?q=80&w=1515&auto=format&fit=crop',
+    image: 'https://i2-prod.dailystar.co.uk/article33062330.ece/ALTERNATES/s615b/0_Vilnius4.jpg',
     location: {
       lat: 54.3872,
       lng: 25.7904

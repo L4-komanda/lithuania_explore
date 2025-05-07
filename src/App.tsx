@@ -17,6 +17,8 @@ import Complaints from "./pages/Complaints";
 import Index from "./pages/Index";
 import EditProfile from "./pages/EditProfile";
 import WaitingPage from "./pages/WaitingPage";
+import FortunePage from "./pages/Fortune";
+
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/editprofile" element={<EditProfile />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/fortune" element={<FortunePage />} />
+
             </Routes>
           </main>
           <Footer />
