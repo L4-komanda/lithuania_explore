@@ -121,6 +121,7 @@ export const attractions: Attraction[] = [
   },
   {
     id: 'attraction-4',
+
     name: 'Aukštumalos pelkė',
     description: 'Aukštumalos pelkė – viena didžiausių pelkių Lietuvoje, turinti unikalią ekosistemą.',
     image: 'https://photos.trip.lt/5ccacad3-7f56-4b47-aa88-987929e58713/3840x2160?crop=true',

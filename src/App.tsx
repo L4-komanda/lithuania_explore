@@ -19,6 +19,8 @@ import EditProfile from "./pages/EditProfile";
 import { UserActionProvider } from "./lib/UserActionContext"
 import { LogIn } from "lucide-react";
 import MyRoutes from "./pages/MyRoutes";
+import WaitingPage from "./pages/WaitingPage";
+import FortunePage from "./pages/Fortune";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ const App = () => (
             <Routes>
               <Route path="/profile" element={<Profile />} />
               <Route path="/races" element={<Races />} />
+              <Route path="/waiting" element={<WaitingPage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/resetpassword" element={<ResetPasswordPage />} />
               <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
@@ -44,6 +47,8 @@ const App = () => (
               <Route path="/myroutes" element={<MyRoutes />} />
               <Route path="/editprofile" element={<EditProfile />} /> 
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/fortune" element={<FortunePage />} />
+
             </Routes>
           </main>
           <Footer />
