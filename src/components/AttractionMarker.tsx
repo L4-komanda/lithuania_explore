@@ -41,25 +41,16 @@ const AttractionMarker: React.FC<AttractionMarkerProps> = ({
         <div className="relative cursor-pointer">
         <MapPin 
             className={cn(
-              "w-8 h-8 drop-shadow-md transition-colors",
-              isVisited 
-                ? "text-green-500" 
-                : isSelected 
-                  ? "text-primary" 
-                  : "text-primary/80 hover:text-primary"
+              "w-10 h-10 drop-shadow-md transition-colors",
+              isSelected
+                ? "text-[#4ED07E]"
+                : "text-[#4ED07E] hover:text-[#4ED07E]"
             )} 
             fill={isSelected ? "rgba(59, 130, 246, 0.2)" : isVisited ? "rgba(34, 197, 94, 0.2)" : "transparent"} 
           />
 
-          {/* Rating circle */}
-          <div
-            className={cn(
-              "absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white text-xs font-semibold flex items-center justify-center shadow-sm transition-transform",
-              isSelected || hovered ? "scale-110" : "scale-100"
-            )}
-          >
-            {attraction.rating}
-          </div>
+          
+
           {/* Visited badge */}
           {isVisited && (
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
