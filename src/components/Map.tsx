@@ -8,20 +8,24 @@ import AttractionDetail from "./AttractionDetail";
 
 const Map: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [selectedAttractionId, setSelectedAttractionId] = useState<string | null>(null);
+  const [selectedAttractionId, setSelectedAttractionId] = useState<
+    string | null
+  >(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isCreatingRoute, setIsCreatingRoute] = useState(false);
-  const [selectedDestinations, setSelectedDestinations] = useState<string[]>([]);
+  const [selectedDestinations, setSelectedDestinations] = useState<string[]>(
+    []
+  );
   const [routeCalculated, setRouteCalculated] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(() => {
-    return localStorage.getItem('loggedIn') === 'true';}
-  );
-  
+    return localStorage.getItem("loggedIn") === "true";
+  });
+
   const selectedAttraction = selectedAttractionId
-    ? attractions.find(attr => attr.id === selectedAttractionId) || null
+    ? attractions.find((attr) => attr.id === selectedAttractionId) || null
     : null;
 
   useEffect(() => {
@@ -35,12 +39,16 @@ const Map: React.FC = () => {
   const handleMarkerClick = (attractionId: string) => {
     if (isCreatingRoute) {
       if (selectedDestinations.includes(attractionId)) {
-        setSelectedDestinations(selectedDestinations.filter(id => id !== attractionId));
+        setSelectedDestinations(
+          selectedDestinations.filter((id) => id !== attractionId)
+        );
       } else {
         setSelectedDestinations([...selectedDestinations, attractionId]);
       }
     } else {
-      const selectedAttraction = attractions.find(attr => attr.id === attractionId);
+      const selectedAttraction = attractions.find(
+        (attr) => attr.id === attractionId
+      );
       if (selectedAttraction) {
         setSelectedAttractionId(attractionId);
         setDetailOpen(true);
@@ -65,7 +73,7 @@ const Map: React.FC = () => {
   };
 
   const handleSaveRoute = () => {
-    navigate('/myroutes');
+    navigate("/myroutes");
   };
 
   const handleCancelRouteCreation = () => {
@@ -77,7 +85,7 @@ const Map: React.FC = () => {
   return (
     <div className="relative w-full h-full min-h-[1000px] overflow-hidden rounded-xl shadow-md">
       <img
-        src="https://i.ibb.co/ccNqtGQH/lietuvos-map.png"
+        src="https://i.ibb.co/KjKFTMQL/lietuvos-zemelapis.png"
         alt="Map background"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -87,13 +95,18 @@ const Map: React.FC = () => {
           <div className="mb-4">
             <h3 className="font-bold">Maršruto informacija</h3>
             <p>Pradinė vieta: Studentu g. 48, Kaunas</p>
-            <p>Pasirinktos vietos: {selectedDestinations.map(id => attractions.find(attr => attr.id === id)?.name).join(', ')}</p>
+            <p>
+              Pasirinktos vietos:{" "}
+              {selectedDestinations
+                .map((id) => attractions.find((attr) => attr.id === id)?.name)
+                .join(", ")}
+            </p>
             {routeCalculated && (
               <div className="mt-2">
-                  <div className="flex items-center gap-2">
-                    <Route className="h-4 w-4 text-primary" />
-                    <p>Bendras atstumas: 392 km</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Route className="h-4 w-4 text-primary" />
+                  <p>Bendras atstumas: 392 km</p>
+                </div>
                 <div className="flex items-center gap-2">
                   <Navigation className="h-4 w-4 text-primary" />
                   <p className="font-medium">Pėsčiomis: 82 val.</p>
@@ -112,7 +125,9 @@ const Map: React.FC = () => {
           ) : (
             <div className="flex gap-2">
               <Button onClick={handleSaveRoute}>Išsaugoti</Button>
-              <Button variant="outline" onClick={handleCancelRouteCreation}>Atšaukti</Button>
+              <Button variant="outline" onClick={handleCancelRouteCreation}>
+                Atšaukti
+              </Button>
             </div>
           )}
         </div>
@@ -128,9 +143,9 @@ const Map: React.FC = () => {
       ))}
 
       {/* Attraction detail dialog */}
-      <AttractionDetail 
-        attraction={selectedAttraction} 
-        isOpen={detailOpen} 
+      <AttractionDetail
+        attraction={selectedAttraction}
+        isOpen={detailOpen}
         onClose={handleCloseDetail}
       />
 
