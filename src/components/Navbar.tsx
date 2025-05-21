@@ -11,6 +11,7 @@ import {
   UserPlus2,
   User2,
   LogOutIcon,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -71,6 +72,7 @@ const Navbar: React.FC = () => {
     { name: "Draugai", path: "/friends", icon: Users },
     { name: "Būrimas", path: "/fortune", icon: Moon },
     { name: "Skundai", path: "/complaints", icon: AlertTriangle },
+    { name: "Rekomendacijos", path: "/recommendations", icon: Sparkles },
   ];
 
   const navItemsUnauthorized = [

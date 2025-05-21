@@ -21,6 +21,7 @@ import { LogIn } from "lucide-react";
 import MyRoutes from "./pages/MyRoutes";
 import WaitingPage from "./pages/WaitingPage";
 import FortunePage from "./pages/Fortune";
+import Recommendations from "./pages/Recommendations";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,8 @@ const App = () => (
               <Route path="/editprofile" element={<EditProfile />} /> 
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/fortune" element={<FortunePage />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+
 
             </Routes>
           </main>
