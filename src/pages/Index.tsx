@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import Map from '@/components/Map';
-import AttractionGallery from '@/components/AttractionGallery';
-import { attractions } from '@/lib/data';
-import { MapPin, Image } from 'lucide-react';
-import { Attraction as AttractionType } from '@/lib/types';
-import { useUserActions } from '@/lib/UserActionContext';
-
+import React, { useEffect, useState } from "react";
+import Map from "@/components/Map";
+import AttractionGallery from "@/components/AttractionGallery";
+import { attractions as initialAttractionsData } from "@/lib/data";
+import { MapPin, Image } from "lucide-react";
+import { Attraction as AttractionType } from "@/lib/types";
+import { useUserActions } from "@/lib/UserActionContext";
+import { useToast } from "@/hooks/use-toast";
+import EditAttractionDialog from "@/components/EditAttractionDialogue";
 
 const IndexPage: React.FC = () => {
   const [selectedAttraction, setSelectedAttraction] =
     useState<AttractionType | null>(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const { hasVisited } = useUserActions();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [attractionToEdit, setAttractionToEdit] =
+    useState<AttractionType | null>(null);
+  const { toast } = useToast();
+  const [attractions, setAttractions] = useState<AttractionType[]>(
+    initialAttractionsData
+  );
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
@@ -21,6 +29,30 @@ const IndexPage: React.FC = () => {
   const openGallery = (attraction: AttractionType) => {
     setSelectedAttraction(attraction);
     setIsGalleryOpen(true);
+  };
+
+  const handleOpenEditModal = () => {
+    if (selectedAttraction) {
+      setAttractionToEdit(selectedAttraction);
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleSaveAttraction = (updatedAttraction: AttractionType) => {
+    setAttractions((prevAttractions) =>
+      prevAttractions.map((attr) =>
+        attr.id === updatedAttraction.id ? updatedAttraction : attr
+      )
+    );
+    if (selectedAttraction && selectedAttraction.id === updatedAttraction.id) {
+      setSelectedAttraction(updatedAttraction);
+    }
+    setIsEditModalOpen(false);
+    setAttractionToEdit(null);
+    toast({
+      title: "Išsaugota!",
+      description: `Informacija apie "${updatedAttraction.name}" buvo sėkmingai atnaujinta.`,
+    });
   };
 
   return (
@@ -49,7 +81,7 @@ const IndexPage: React.FC = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Populiariausios vietos</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {attractions.slice(0, 3).map((attraction, index) => (
+            {attractions.slice(0, 6).map((attraction, index) => (
               <div
                 key={attraction.id}
                 className="glass-card rounded-xl overflow-hidden transition-all hover:shadow-md animate-slide-in"
@@ -70,9 +102,10 @@ const IndexPage: React.FC = () => {
                       Aplankyta
                     </div>
                   )}
-                  <button 
+                  <button
                     onClick={() => openGallery(attraction)}
                     className="absolute bottom-3 right-3 p-2 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white transition-colors"
+                    title="Peržiūrėti galeriją"
                   >
                     <Image className="w-5 h-5 text-primary" />
                   </button>
@@ -104,12 +137,25 @@ const IndexPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Gallery modal */}
-        {selectedAttraction && (
+        {selectedAttraction && isGalleryOpen && (
           <AttractionGallery
             attraction={selectedAttraction}
             isOpen={isGalleryOpen}
             onClose={() => setIsGalleryOpen(false)}
+            onEdit={handleOpenEditModal}
+          />
+        )}
+
+        {/* Edit Attraction Modal */}
+        {attractionToEdit && (
+          <EditAttractionDialog
+            isOpen={isEditModalOpen}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setAttractionToEdit(null);
+            }}
+            attraction={attractionToEdit}
+            onSave={handleSaveAttraction}
           />
         )}
       </div>
