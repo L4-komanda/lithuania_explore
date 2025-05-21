@@ -32,20 +32,49 @@ import {
   AlertCircle,
   MessageSquare,
   FileText,
+  Edit,
+  Trash2,
   ImagePlus,
   X,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+type ComplaintStatus =
+  | "Pateiktas"
+  | "Gautas"
+  | "Peržiūrėtas"
+  | "Įvykdytas"
+  | "Atmestas";
 
 interface Complaint {
   id: string;
   subject: string;
   category: string;
   message: string;
-  status: "Pateiktas" | "Peržiūrimas" | "Išspręstas" | "Atmestas";
+  status: ComplaintStatus;
   date: string;
 }
 
-// Mock data for demonstration
 const mockComplaints: Complaint[] = [
   {
     id: "1",
@@ -60,7 +89,7 @@ const mockComplaints: Complaint[] = [
     subject: "Techninė problema",
     category: "technical",
     message: "Neveikia žemėlapio funkcija.",
-    status: "Išspręstas",
+    status: "Įvykdytas",
     date: "2025-04-14",
   },
 ];
@@ -74,12 +103,30 @@ const ComplaintsPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const [complaints, setComplaints] = useState<Complaint[]>(mockComplaints);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(
+    null
+  );
+  const [newStatus, setNewStatus] = useState<ComplaintStatus>("Pateiktas");
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    const newComplaint: Complaint = {
+      id: String(Date.now()),
+      subject,
+      category,
+      message,
+      status: "Pateiktas",
+      date: new Date().toISOString().split("T")[0],
+    };
+
     // Simulate form submission
     setTimeout(() => {
+      setComplaints((prev) => [newComplaint, ...prev]);
       setIsLoading(false);
       toast({
         title: "Skundas pateiktas",
@@ -110,19 +157,69 @@ const ComplaintsPage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  const getStatusColor = (status: string) => {
+  const handleOpenStatusDialog = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setNewStatus(complaint.status);
+    setIsStatusDialogOpen(true);
+  };
+
+  const handleOpenDeleteDialog = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleChangeStatus = () => {
+    if (selectedComplaint) {
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((c) =>
+          c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
+        )
+      );
+      toast({
+        title: "Statusas pakeistas",
+        description: `Skundo "${selectedComplaint.subject}" statusas pakeistas į "${newStatus}".`,
+      });
+      setIsStatusDialogOpen(false);
+      setSelectedComplaint(null);
+    }
+  };
+
+  const handleDeleteComplaint = () => {
+    if (selectedComplaint) {
+      setComplaints((prevComplaints) =>
+        prevComplaints.filter((c) => c.id !== selectedComplaint.id)
+      );
+      toast({
+        title: "Skundas ištrintas",
+        description: `Skundas "${selectedComplaint.subject}" buvo sėkmingai pašalintas.`,
+        variant: "destructive",
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedComplaint(null);
+    }
+  };
+
+  const getStatusColor = (status: ComplaintStatus) => {
     switch (status) {
       case "Pateiktas":
-        return "text-yellow-600";
-      case "Peržiūrimas":
+        return "text-blue-500";
+      case "Peržiūrėtas":
         return "text-blue-600";
-      case "Išspręstas":
+      case "Įvykdytas":
         return "text-green-600";
       case "Atmestas":
         return "text-red-600";
       default:
         return "";
     }
+  };
+
+  const categoryMap: Record<string, string> = {
+    technical: "Techninė problema",
+    content: "Neteisingas turinys",
+    user: "Naudotojo elgesys",
+    payment: "Mokėjimo problema",
+    other: "Kita",
   };
 
   return (
@@ -183,17 +280,11 @@ const ComplaintsPage: React.FC = () => {
                         <SelectValue placeholder="Pasirinkite kategoriją" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="technical">
-                          Techninė problema
-                        </SelectItem>
-                        <SelectItem value="content">
-                          Neteisingas turinys
-                        </SelectItem>
-                        <SelectItem value="user">Naudotojo elgesys</SelectItem>
-                        <SelectItem value="payment">
-                          Mokėjimo problema
-                        </SelectItem>
-                        <SelectItem value="other">Kita</SelectItem>
+                        {Object.entries(categoryMap).map(([key, value]) => (
+                          <SelectItem key={key} value={key}>
+                            {value}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -269,8 +360,22 @@ const ComplaintsPage: React.FC = () => {
                 </form>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline">Atšaukti</Button>
-                <Button onClick={handleSubmit} disabled={isLoading}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    setSubject("");
+                    setCategory("");
+                    setMessage("");
+                  }}
+                >
+                  Atšaukti
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  type="submit"
+                >
                   {isLoading ? "Siunčiama..." : "Pateikti skundą"}
                 </Button>
               </CardFooter>
@@ -289,42 +394,146 @@ const ComplaintsPage: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Tema</TableHead>
-                      <TableHead>Kategorija</TableHead>
-                      <TableHead>Būsena</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockComplaints.map((complaint) => (
-                      <TableRow key={complaint.id}>
-                        <TableCell>{complaint.date}</TableCell>
-                        <TableCell>{complaint.subject}</TableCell>
-                        <TableCell>
-                          {complaint.category === "technical" &&
-                            "Techninė problema"}
-                          {complaint.category === "content" &&
-                            "Neteisingas turinys"}
-                          {complaint.category === "user" && "Naudotojo elgesys"}
-                          {complaint.category === "payment" &&
-                            "Mokėjimo problema"}
-                          {complaint.category === "other" && "Kita"}
-                        </TableCell>
-                        <TableCell className={getStatusColor(complaint.status)}>
-                          {complaint.status}
-                        </TableCell>
+                {complaints.length === 0 ? (
+                  <p className="text-muted-foreground text-center">
+                    Skundų nėra.
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Tema</TableHead>
+                        <TableHead>Kategorija</TableHead>
+                        <TableHead>Būsena</TableHead>
+                        <TableHead className="text-right">Veiksmai</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {complaints.map((complaint) => (
+                        <TableRow key={complaint.id}>
+                          <TableCell>{complaint.date}</TableCell>
+                          <TableCell>{complaint.subject}</TableCell>
+                          <TableCell>
+                            {categoryMap[complaint.category] ||
+                              complaint.category}
+                          </TableCell>
+                          <TableCell
+                            className={getStatusColor(complaint.status)}
+                          >
+                            {complaint.status}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2 whitespace-nowrap">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenStatusDialog(complaint)}
+                            >
+                              <Edit className="mr-1 h-3 w-3" /> Keisti statusą
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleOpenDeleteDialog(complaint)}
+                            >
+                              <Trash2 className="mr-1 h-3 w-3" /> Ištrinti
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
+      {selectedComplaint && (
+        <>
+          <Dialog
+            open={isStatusDialogOpen}
+            onOpenChange={setIsStatusDialogOpen}
+          >
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Keisti skundo statusą</DialogTitle>
+                <DialogDescription>
+                  Pasirinkite naują statusą skundui "{selectedComplaint.subject}
+                  ".
+                </DialogDescription>
+                <div className="pt-3">
+                  <Label
+                    htmlFor="complaintMessageFull"
+                    className="text-sm font-medium"
+                  >
+                    Skundo pranešimas:
+                  </Label>
+                  <div
+                    id="complaintMessageFull"
+                    className="mt-1 text-sm p-3 bg-muted rounded-md max-h-40 overflow-y-auto border"
+                  >
+                    {selectedComplaint.message}
+                  </div>
+                </div>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="status" className="text-right">
+                    Statusas
+                  </Label>
+                  <Select
+                    value={newStatus}
+                    onValueChange={(value) =>
+                      setNewStatus(value as ComplaintStatus)
+                    }
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Pasirinkite statusą" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pateiktas">Pateiktas</SelectItem>
+                      <SelectItem value="Gautas">Gautas</SelectItem>
+                      <SelectItem value="Peržiūrėtas">Peržiūrėtas</SelectItem>
+                      <SelectItem value="Įvykdytas">Įvykdytas</SelectItem>
+                      <SelectItem value="Atmestas">Atmestas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Atšaukti</Button>
+                </DialogClose>
+                <Button onClick={handleChangeStatus}>Išsaugoti</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <AlertDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Ar tikrai norite ištrinti skundą?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Šis veiksmas negali būti atšauktas. Skundas "
+                  {selectedComplaint.subject}" bus visam laikui pašalintas.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Atšaukti</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteComplaint}>
+                  Ištrinti
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )}
     </div>
   );
 };
