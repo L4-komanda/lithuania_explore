@@ -1,24 +1,69 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { friends } from '@/lib/data';
 import { Users, UserPlus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FriendSwiper from '@/components/FriendSwiper';
+import { Fireworks } from 'fireworks-js';
 
 const FriendsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSwiper, setShowSwiper] = useState(false);
+  const [clickedFriendIds, setClickedFriendIds] = useState<string[]>([]);
+  const fireworksContainerRef = useRef<HTMLDivElement | null>(null);
+  const fireworksInstanceRef = useRef<Fireworks | null>(null);
   
   // Animation on component mount
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
     window.scrollTo({ top: 0 });
+    
+    return () => {
+      // Cleanup fireworks on unmount
+      fireworksInstanceRef.current?.stop();
+    };
   }, []);
   
   // Filter friends based on search term
   const filteredFriends = friends.filter(
     friend => friend.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const handleAddFriend = (friendId: string) => {
+    setClickedFriendIds((prev) => [...prev, friendId]);
+
+    if (!fireworksInstanceRef.current) {
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.left = '0';
+      container.style.width = '100%';
+      container.style.height = '100%';
+      container.style.zIndex = '9999';
+      container.style.pointerEvents = 'none';
+      document.body.appendChild(container);
+
+      fireworksInstanceRef.current = new Fireworks(container, {
+        hue: { min: 0, max: 360 },
+        delay: { min: 15, max: 30 },
+        acceleration: 1.05,
+        friction: 0.98,
+        gravity: 1.5,
+        particles: 50,
+        explosion: 5,
+        autoresize: true,
+        brightness: { min: 50, max: 80 },
+        decay: { min: 0.015, max: 0.03 },
+        boundaries: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight },
+      });
+
+      fireworksInstanceRef.current.start();
+      setTimeout(() => {
+        fireworksInstanceRef.current?.stop();
+        document.body.removeChild(container);
+        fireworksInstanceRef.current = null;
+      }, 3000); // Fireworks last for 3 seconds
+    }
+  };
   
   return (
     <div className="min-h-screen pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
@@ -133,8 +178,12 @@ const FriendsPage: React.FC = () => {
                 <div>
                   <h3 className="font-medium">{friend.name}</h3>
                   <p className="text-sm text-muted-foreground capitalize">{friend.status}</p>
-                  <button className="mt-2 text-sm text-primary hover:underline">
-                    Pridėti draugą
+                  <button 
+                    className={`mt-2 text-sm ${clickedFriendIds.includes(friend.id) ? 'text-gray-500' : 'text-primary'} hover:underline`}
+                    onClick={() => handleAddFriend(friend.id)}
+                    disabled={clickedFriendIds.includes(friend.id)}
+                  >
+                    {clickedFriendIds.includes(friend.id) ? "Užklausa išsiųsta" : "Pridėti draugą"}
                   </button>
                 </div>
               </div>

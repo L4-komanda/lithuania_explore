@@ -1,6 +1,10 @@
 
 import { Race, User, Friend, Attraction } from './types';
 import VilniausMaratonas from './images/VilniausM.jpg';
+import Laura from './images/Laura.jpg';
+import Marius from './images/Marius.jpg';
+import Tomas from './images/Tomas.png';
+
 // Mock current user
 export const currentUser: User = {
   id: 'user-1',
@@ -62,19 +66,19 @@ export const friends: Friend[] = [
   {
     id: 'friend-1',
     name: 'Marius Kazlauskas',
-    avatar: 'https://ui-avatars.com/api/?name=Marius+Kazlauskas&background=4CAF50&color=fff',
+    avatar: Marius,
     status: 'online'
   },
   {
     id: 'friend-2',
     name: 'Laura Petraitytė',
-    avatar: 'https://ui-avatars.com/api/?name=Laura+Petraitytė&background=E91E63&color=fff',
+    avatar: Laura,
     status: 'offline'
   },
   {
     id: 'friend-3',
     name: 'Tomas Jonaitis',
-    avatar: 'https://ui-avatars.com/api/?name=Tomas+Jonaitis&background=FF9800&color=fff',
+    avatar: Tomas,
     status: 'online'
   }
 ];

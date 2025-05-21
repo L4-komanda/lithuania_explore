@@ -1,10 +1,10 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, X, Check, MapPin, Calendar, User } from 'lucide-react';
 import { Friend } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { Fireworks } from 'fireworks-js';
 
 interface FriendSwiperProps {
   friends: Friend[];
@@ -14,7 +14,33 @@ interface FriendSwiperProps {
 const FriendSwiper: React.FC<FriendSwiperProps> = ({ friends, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState('');
+  const [showFireworks, setShowFireworks] = useState(false);
+  const fireworksRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (showFireworks && fireworksRef.current) {
+      const fireworks = new Fireworks(fireworksRef.current, {
+        hue: { min: 0, max: 360 },
+        delay: { min: 15, max: 30 },
+        acceleration: 1.05,
+        friction: 0.98,
+        gravity: 1.5,
+        particles: 50,
+        explosion: 5,
+        autoresize: true,
+        brightness: { min: 50, max: 80 },
+        decay: { min: 0.015, max: 0.03 },
+        boundaries: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight },
+      });
+
+      fireworks.start();
+      setTimeout(() => {
+        fireworks.stop();
+        setShowFireworks(false);
+      }, 3000); // Fireworks last for 3 seconds
+    }
+  }, [showFireworks]);
 
   const currentFriend = friends[currentIndex];
   
@@ -49,6 +75,7 @@ const FriendSwiper: React.FC<FriendSwiperProps> = ({ friends, onClose }) => {
       title: "Užklausa išsiųsta",
       description: `Draugystės užklausa išsiųsta ${currentFriend.name}`,
     });
+    setShowFireworks(true);
     goToNext();
   };
   
@@ -58,6 +85,7 @@ const FriendSwiper: React.FC<FriendSwiperProps> = ({ friends, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      {showFireworks && <div ref={fireworksRef} className="absolute inset-0 z-50" />}
       <Card className="relative w-full max-w-md overflow-hidden">
         <Button 
           variant="ghost" 
@@ -68,7 +96,7 @@ const FriendSwiper: React.FC<FriendSwiperProps> = ({ friends, onClose }) => {
           <X className="h-5 w-5" />
         </Button>
         
-        <div className="relative h-[500px] overflow-hidden">
+        <div className="relative h-[500px] overflow-y-auto">
           <div 
             className={`absolute inset-0 transition-transform duration-300 ease-out ${
               direction === 'left' ? 'translate-x-full' : 
