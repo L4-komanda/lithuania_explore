@@ -1,6 +1,6 @@
 
 import { Race, User, Friend, Attraction } from './types';
-
+import VilniausMaratonas from './images/VilniausM.jpg';
 // Mock current user
 export const currentUser: User = {
   id: 'user-1',
@@ -15,7 +15,7 @@ export const races: Race[] = [
     id: 'race-1',
     name: 'Vilniaus maratonas',
     description: 'Didžiausias bėgimo renginys Lietuvoje, vykstantis Vilniaus senamiestyje ir apylinkėse.',
-    image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?q=80&w=1470&auto=format&fit=crop',
+    image: VilniausMaratonas,
     date: '2023-09-10T09:00:00.000Z',
     location: {
       lat: 54.6872,
@@ -23,7 +23,7 @@ export const races: Race[] = [
       name: 'Vilnius, Katedros aikštė'
     },
     distance: 42.2,
-    participants: ['user-1', 'friend-2'],
+    participants: ['friend-2'],
     maxParticipants: 5000
   },
   {
