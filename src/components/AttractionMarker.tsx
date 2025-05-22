@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Attraction } from "@/lib/types";
-import { MapPin } from "lucide-react";
+import { MapPin} from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { useUserActions } from '@/lib/UserActionContext';
 
@@ -8,6 +8,7 @@ interface AttractionMarkerProps {
   attraction: Attraction;
   isSelected: boolean;
   onClick: () => void;
+  
 }
 
 const AttractionMarker: React.FC<AttractionMarkerProps> = ({
@@ -44,16 +45,18 @@ const AttractionMarker: React.FC<AttractionMarkerProps> = ({
               "w-10 h-10 drop-shadow-md transition-colors",
               isSelected
                 ? "text-[#4ED07E]"
-                : "text-[#4ED07E] hover:text-[#4ED07E]"
+                : isVisited
+                ? "text-[#eb0748]"
+                : "text-[#4ED07E] hover:text-[#4ED07E]"      
             )} 
-            fill={isSelected ? "rgba(59, 130, 246, 0.2)" : isVisited ? "rgba(34, 197, 94, 0.2)" : "transparent"} 
+            fill={isSelected ? "rgba(85, 239, 42, 0.58)" : isVisited ?"rgba(235, 7, 72, 0.14)" : "transparent"} 
           />
 
           
 
           {/* Visited badge */}
           {isVisited && (
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#eb0748] rounded-full border-2 border-white flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-3 h-3">
                 <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
               </svg>
