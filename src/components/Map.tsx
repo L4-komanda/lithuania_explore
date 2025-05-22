@@ -79,15 +79,23 @@ const Map: React.FC = () => {
   const handleCancelRouteCreation = () => {
     setIsCreatingRoute(false);
     setSelectedDestinations([]);
-    setRouteCalculated(false);
+    setRouteCalculated(false);  // important to switch back to URL image
+    setLoading(false);          // just in case
   };
+
 
   return (
     <div className="relative w-full h-full min-h-[1000px] overflow-hidden rounded-xl shadow-md">
       <img
-        src="https://i.ibb.co/KjKFTMQL/lietuvos-zemelapis.png"
+        src={
+          routeCalculated
+            ? "route.png"
+            : "https://i.ibb.co/KjKFTMQL/lietuvos-zemelapis.png"
+        }
         alt="Map background"
-        className="absolute inset-0 w-full h-full object-cover"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          loading ? "opacity-50 blur-sm" : ""
+        }`}
       />
 
       {isCreatingRoute && (
@@ -133,7 +141,8 @@ const Map: React.FC = () => {
         </div>
       )}
 
-      {attractions.map((attraction) => (
+      {/* Only show attraction markers when not loading */}
+      {!loading && attractions.map((attraction) => (
         <AttractionMarker
           key={attraction.id}
           attraction={attraction}

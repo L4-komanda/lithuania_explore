@@ -65,6 +65,7 @@ const MyRoutes: React.FC = () => {
   const [routeToDelete, setRouteToDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [routeCalculated, setRouteCalculated] = useState(false);
+  const [isRouteViewOpen, setIsRouteViewOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -74,6 +75,14 @@ const MyRoutes: React.FC = () => {
     const mins = Math.round(minutes % 60);
     return `${hours}val. ${mins}min`;
   };
+
+  const openRouteViewDialog = () => {
+    setIsRouteViewOpen(true);
+  };
+  const closeRouteViewDialog = () => {
+    setIsRouteViewOpen(false);
+  };
+
   const handleCalculateRoute = () => {
     setLoading(true);
     setTimeout(() => {
@@ -238,7 +247,12 @@ const MyRoutes: React.FC = () => {
                     <TableCell className="font-medium">{index+1}</TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{route.name}</div>
+                        <div
+                          className="font-medium cursor-pointer text-green-500 hover:underline"
+                          onClick={openRouteViewDialog}
+                        >
+                          {route.name}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           {route.startPoint} → {route.points.map(p => p.attraction.name).join(' → ')}
                         </div>
@@ -278,9 +292,28 @@ const MyRoutes: React.FC = () => {
           </div>
         )}
 
+         {/* New Route View Dialog */}
+        <Dialog open={isRouteViewOpen} onOpenChange={setIsRouteViewOpen}>
+          <DialogContent className="max-w-2xl w-full">
+            <DialogHeader>
+              <DialogTitle>Maršruto peržiūra</DialogTitle>
+            </DialogHeader>
+            <div className="py-4 text-center">
+              <p className="mb-4 font-semibold text-lg">
+                Studentų g. 48 → Aukštumalos Pelkė → Kryžių kalnas
+              </p>
+              <img
+                src="route1.png"
+                alt="Maršrutas"
+                className="mx-auto rounded-md shadow-md max-w-full h-auto"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Edit Route Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent  className="w-screen h-screen max-w-none rounded-none p-6 overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Redaguoti maršrutą</DialogTitle>
             </DialogHeader>
@@ -349,9 +382,18 @@ const MyRoutes: React.FC = () => {
                     {loading ? "Skaičiuojama..." : "Skaičiuoti optimalų maršrutą"}
                   </Button>
                   {showSummary && (
-                    <div className="bg-muted p-3 rounded-md">
-                      <p className="font-medium">Bendra informacija</p>
-                      <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                  <div className="bg-muted p-3 rounded-md flex gap-4 items-start">
+                    {/* Picture on the left */}
+                    <img
+                      src="route3.png"
+                      alt="Route preview"
+                      className="w-full max-w-3xl rounded shadow-md"
+                    />
+
+                    {/* Summary info on the right */}
+                    <div>
+                      <p className="font-medium mb-4 text-lg">Bendra informacija</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm bg-muted p-4 rounded-md mb-6">
                         <span>Bendras atstumas:</span>
                         <span>{editingRoute?.totalDistance} km</span>
                         <span>Automobiliu:</span>
@@ -360,7 +402,8 @@ const MyRoutes: React.FC = () => {
                         <span>{formatTime(editingRoute?.totalTimeByFoot || 0)}</span>
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
                 </div>
                 
                 <DialogFooter>
