@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Users, UserPlus, Search, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FriendSwiper from "@/components/FriendSwiper";
+import FriendSwiper from "@/components/FriendSwiper"; // Assuming FriendSwiper can handle onAddFriend, myFriendIds, pendingRequestIds
 import { Fireworks } from "fireworks-js";
+import { useToast } from "@/components/ui/use-toast"; // Import useToast
+import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 
+// Avatar URLs and initial data (no changes here, kept for context)
 const MariusAvatar =
   "https://tse2.mm.bing.net/th/id/OIP.VQFS87B9B6m48zndrdJtOwHaHa?pid=ImgDet&w=202&h=202&c=7";
 const LauraAvatar =
@@ -107,12 +110,6 @@ const initialSuggestedFriendsData: Friend[] = [
     avatar: IngridaAvatar,
     status: "offline",
   },
-  {
-    id: "suggest-5",
-    name: "Petras Kovalskis",
-    avatar: AnaAvatar,
-    status: "online",
-  },
 ];
 
 const FriendsPage: React.FC = () => {
@@ -121,13 +118,15 @@ const FriendsPage: React.FC = () => {
   const [showSwiper, setShowSwiper] = useState(false);
   const [clickedFriendIds, setClickedFriendIds] = useState<string[]>([]);
   const fireworksInstanceRef = useRef<Fireworks | null>(null);
+  const { toast } = useToast(); // Initialize toast
+  const [friendsForSwiper, setFriendsForSwiper] = useState<Friend[]>([]); // State for swiper content
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
     window.scrollTo({ top: 0 });
 
     return () => {
-      fireworksInstanceRef.current?.stop(true); // Pass true to remove canvas
+      fireworksInstanceRef.current?.stop(true);
       fireworksInstanceRef.current = null;
     };
   }, []);
@@ -137,12 +136,28 @@ const FriendsPage: React.FC = () => {
   );
 
   const handleAddFriendFromSuggestion = (friendToAdd: Friend) => {
-    if (myFriends.some((f) => f.id === friendToAdd.id)) {
+    if (
+      myFriends.some((f) => f.id === friendToAdd.id) ||
+      clickedFriendIds.includes(friendToAdd.id)
+    ) {
+      // Already a friend or request already sent
       return;
     }
 
-    setMyFriends((prev) => [...prev, friendToAdd]);
+    // Optimistically add to UI as 'request sent'
+    // In a real app, this would become a friend after confirmation or stay as 'request sent'
     setClickedFriendIds((prev) => [...prev, friendToAdd.id]);
+
+    // Simulate adding to friends for demo, or this could be an API call
+    // For this example, we'll add to myFriends directly after a delay
+    // to simulate a request being accepted, or just mark as 'request sent'.
+    // The prompt says "Draugas pridėtas", so we add them to myFriends.
+    setMyFriends((prev) => [...prev, friendToAdd]);
+
+    toast({
+      title: "Draugas pridėtas!",
+      description: `${friendToAdd.name} sėkmingai pridėtas prie tavo draugų.`,
+    });
 
     if (!fireworksInstanceRef.current) {
       const container = document.createElement("div");
@@ -183,10 +198,35 @@ const FriendsPage: React.FC = () => {
     setMyFriends((prev) =>
       prev.filter((friend) => friend.id !== friendIdToRemove)
     );
+    // Also remove from clickedFriendIds if they were just added and then removed
+    setClickedFriendIds((prev) => prev.filter((id) => id !== friendIdToRemove));
+  };
+
+  const openSwiperForNewFriends = () => {
+    const discoverableFriends = initialSuggestedFriendsData.filter(
+      (potentialFriend) =>
+        !myFriends.some((myFriend) => myFriend.id === potentialFriend.id) &&
+        !clickedFriendIds.includes(potentialFriend.id)
+    );
+    setFriendsForSwiper(discoverableFriends);
+    setShowSwiper(true);
+  };
+
+  const openSwiperForInvitations = () => {
+    // Assuming invitationFriendsData are also people you can "add" (send a request to)
+    // If they were incoming invites, FriendSwiper would need different logic
+    const relevantInvitations = invitationFriendsData.filter(
+      (potentialFriend) =>
+        !myFriends.some((myFriend) => myFriend.id === potentialFriend.id) &&
+        !clickedFriendIds.includes(potentialFriend.id)
+    );
+    setFriendsForSwiper(relevantInvitations);
+    setShowSwiper(true);
   };
 
   return (
     <div className="min-h-screen pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
+      <Toaster /> {/* Add Toaster component here */}
       <div className="max-w-7xl mx-auto">
         {/* Hero section */}
         <section className="mb-8">
@@ -217,10 +257,10 @@ const FriendsPage: React.FC = () => {
             </div>
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => setShowSwiper(true)}
+              onClick={openSwiperForNewFriends} // Updated onClick handler
             >
               <UserPlus className="h-5 w-5 mr-2" />
-              Peržiūrėti kvietimus
+              Ieškoti naujų draugų
             </Button>
           </div>
         </section>
@@ -299,14 +339,14 @@ const FriendsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Friend suggestions */}
+        {/* Friend suggestions ("Kvietimai į draugus" section) */}
         <section className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Rekomenduojami draugai</h2>
+            <h2 className="text-2xl font-bold">Kvietimai į draugus</h2>
             <Button
               variant="outline"
               className="text-primary border-primary hover:bg-primary/5 hover:text-primary"
-              onClick={() => setShowSwiper(true)}
+              onClick={openSwiperForInvitations} // Updated onClick handler
             >
               Peržiūrėti visus kvietimus
             </Button>
@@ -316,7 +356,10 @@ const FriendsPage: React.FC = () => {
               const isAlreadyFriend = myFriends.some(
                 (mf) => mf.id === friend.id
               );
-              const isRequestSent = clickedFriendIds.includes(friend.id);
+              // If they are a friend, 'clickedFriendIds' doesn't matter for "Request Sent" state.
+              // "Request Sent" is only if they are NOT a friend, but a request IS pending.
+              const isRequestSent =
+                !isAlreadyFriend && clickedFriendIds.includes(friend.id);
               const isDisabled = isAlreadyFriend || isRequestSent;
 
               return (
@@ -339,9 +382,9 @@ const FriendsPage: React.FC = () => {
                       size="sm"
                       className={`mt-1 w-full sm:w-auto text-xs ${
                         isAlreadyFriend
-                          ? "bg-green-600 hover:bg-green-700"
+                          ? "bg-green-600 hover:bg-green-700 cursor-not-allowed"
                           : isRequestSent
-                          ? "bg-gray-400 hover:bg-gray-500"
+                          ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
                           : "bg-primary hover:bg-primary/90 text-primary-foreground"
                       }`}
                       onClick={() =>
@@ -362,13 +405,14 @@ const FriendsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Friend swiper for invitations */}
+        {/* Friend swiper */}
         {showSwiper && (
           <FriendSwiper
-            friends={invitationFriendsData}
+            friends={friendsForSwiper}
             onClose={() => setShowSwiper(false)}
-            // You might want to pass a handler for when a friend is added from the swiper
-            // e.g., onAddFriendFromSwiper={(friend) => handleAddFriendFromSuggestion(friend)}
+            onAddFriend={handleAddFriendFromSuggestion}
+            myFriendIds={myFriends.map((f) => f.id)}
+            pendingRequestIds={clickedFriendIds}
           />
         )}
       </div>
