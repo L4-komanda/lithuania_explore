@@ -134,12 +134,6 @@ const FortunePage: React.FC = () => {
     } else if (scanStage === "scanned" && !isPredicting) {
       setIsPredicting(true);
 
-      toast({
-        title: "Pradedamas būrimas...",
-        description: "Jūsų likimas netrukus paaiškės! 🎶",
-        duration: 5000,
-      });
-
       if (audioElement) {
         audioElement.currentTime = 0;
         audioElement.play().catch((error) => {
@@ -185,10 +179,12 @@ const FortunePage: React.FC = () => {
           (moonValue + horoscopeValue + yearValue + attractions.length) %
           attractions.length;
         setSuggestedAttraction(attractions[index]);
+
+        setIsPredicting(false);
         setIsOpen(true);
+
         setScanStage("ready");
         setScanResult(null);
-        setIsPredicting(false);
         predictionTimeoutRef.current = null;
 
         toast({
@@ -201,6 +197,12 @@ const FortunePage: React.FC = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
+      <style>{`
+        .prediction-in-progress-dialog > button[aria-label="Close"],
+        .prediction-in-progress-dialog > button.absolute.right-4.top-4 {
+          display: none !important;
+        }
+      `}</style>
       <audio ref={audioRef} src={PREDICTION_MUSIC_PATH} loop />
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight text-center">
@@ -220,6 +222,7 @@ const FortunePage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Moon Phase, Horoscope, Birth Year Selects remain the same */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Moon className="text-primary h-5 w-5" />
@@ -306,11 +309,11 @@ const FortunePage: React.FC = () => {
               </div>
               <div
                 className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-3 cursor-pointer hover:border-primary transition-colors relative"
-                style={{ height: "220px" }}
+                style={{ height: "420px" }} // Increased height
               >
                 {scanStage === "ready" && !scanResult && !isPredicting && (
                   <div className="text-center">
-                    <Scan className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                    <Scan className="h-20 w-20 mx-auto mb-4 text-muted-foreground" />{" "}
                     <p className="text-sm text-muted-foreground">
                       Pridėkite delną prie skenavimo ploto
                     </p>
@@ -319,19 +322,21 @@ const FortunePage: React.FC = () => {
 
                 {scanStage === "scanning" && (
                   <div className="absolute inset-0 flex items-center justify-center bg-primary/5 rounded-lg">
-                    <div className="h-full w-full relative overflow-hidden">
+                    <div className="h-full w-full relative overflow-hidden rounded-lg">
+                      {" "}
                       <div
-                        className="absolute top-0 left-0 h-full w-1 bg-primary animate-pulse shadow-lg"
+                        className="absolute top-0 h-full w-1 bg-primary animate-pulse"
                         style={{
-                          animation: "scanMove 5s linear",
-                          boxShadow: "0 0 10px 5px rgba(var(--primary), 0.3)",
+                          boxShadow:
+                            "0 0 10px 5px hsla(var(--primary, 222.2 47.4% 11.2%), 0.3)",
+                          animation: "scanMove 2s linear infinite",
                         }}
                       ></div>
                       <style>{`
                         @keyframes scanMove {
-                          0% { left: 0; }
-                          50% { left: 100%; }
-                          100% { left: 0; }
+                          0% { left: 0%; }
+                          50% { left: calc(100% - 0.25rem); } /* 0.25rem is w-1 in Tailwind */
+                          100% { left: 0%; }
                         }
                       `}</style>
                     </div>
@@ -380,7 +385,24 @@ const FortunePage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Suggestion Dialog */}
+      {isPredicting && (
+        <Dialog open={isPredicting}>
+          <DialogContent
+            className="prediction-in-progress-dialog flex flex-col items-center justify-center text-center p-10 sm:max-w-sm"
+            onInteractOutside={(e) => e.preventDefault()}
+            onEscapeKeyDown={(e) => e.preventDefault()}
+          >
+            <Moon className="h-16 w-16 md:h-20 md:w-20 animate-spin text-primary mb-6" />
+            <DialogTitle className="text-2xl md:text-3xl font-bold mb-2">
+              Buriama...
+            </DialogTitle>
+            <DialogDescription className="text-md md:text-lg text-muted-foreground">
+              Jūsų likimas netrukus paaiškės! 🎶
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      )}
+
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
