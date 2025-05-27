@@ -121,7 +121,7 @@ const initialSuggestedFriendsData: Friend[] = [
   },
   {
     id: "invite-1",
-    name: "Petras Kovalskis (Pasiūlymas)",
+    name: "Petras Kovalskis",
     avatar: AnaAvatar,
     status: "online",
   },

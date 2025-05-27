@@ -174,7 +174,7 @@ const FriendSwiper: React.FC<FriendSwiperProps> = ({
                   </div>
                   <div className="bg-secondary/50 p-3 rounded-lg">
                     <p className="text-center text-sm text-muted-foreground">
-                      Čia galėtų būti daugiau informacijos apie šį vartotoją.
+                      Norėčiau susipažinti!
                     </p>
                   </div>
                 </div>
