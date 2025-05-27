@@ -1,12 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Users, UserPlus, Search, XCircle } from "lucide-react";
+import {
+  Users,
+  UserPlus,
+  Search,
+  XCircle,
+  Send,
+  CheckCircle,
+  UserX,
+  MailQuestion,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FriendSwiper from "@/components/FriendSwiper"; // Assuming FriendSwiper can handle onAddFriend, myFriendIds, pendingRequestIds
+import FriendSwiper from "@/components/FriendSwiper";
 import { Fireworks } from "fireworks-js";
-import { useToast } from "@/components/ui/use-toast"; // Import useToast
-import { Toaster } from "@/components/ui/toaster"; // Import Toaster
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
-// Avatar URLs and initial data (no changes here, kept for context)
 const MariusAvatar =
   "https://tse2.mm.bing.net/th/id/OIP.VQFS87B9B6m48zndrdJtOwHaHa?pid=ImgDet&w=202&h=202&c=7";
 const LauraAvatar =
@@ -58,7 +67,7 @@ const initialMyFriendsData: Friend[] = [
   },
 ];
 
-const invitationFriendsData: Friend[] = [
+const initialInvitationFriendsData: Friend[] = [
   {
     id: "invite-1",
     name: "Petras Kovalskis",
@@ -110,125 +119,176 @@ const initialSuggestedFriendsData: Friend[] = [
     avatar: IngridaAvatar,
     status: "offline",
   },
+  {
+    id: "invite-1",
+    name: "Petras Kovalskis (Pasiūlymas)",
+    avatar: AnaAvatar,
+    status: "online",
+  },
 ];
 
 const FriendsPage: React.FC = () => {
   const [myFriends, setMyFriends] = useState<Friend[]>(initialMyFriendsData);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showSwiper, setShowSwiper] = useState(false);
-  const [clickedFriendIds, setClickedFriendIds] = useState<string[]>([]);
+  const [incomingInvitations, setIncomingInvitations] = useState<Friend[]>(
+    initialInvitationFriendsData
+  );
+  const [suggestedFriends, setSuggestedFriends] = useState<Friend[]>(
+    initialSuggestedFriendsData
+  );
+  const [processedActionIds, setProcessedActionIds] = useState<string[]>([]);
   const fireworksInstanceRef = useRef<Fireworks | null>(null);
-  const { toast } = useToast(); // Initialize toast
-  const [friendsForSwiper, setFriendsForSwiper] = useState<Friend[]>([]); // State for swiper content
+  const { toast } = useToast();
+  const [showDiscoverSwiper, setShowDiscoverSwiper] = useState(false);
+  const [discoverSwiperFriends, setDiscoverSwiperFriends] = useState<Friend[]>(
+    []
+  );
+  const [showInvitationsSwiper, setShowInvitationsSwiper] = useState(false);
+  const [invitationsSwiperFriends, setInvitationsSwiperFriends] = useState<
+    Friend[]
+  >([]);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
     window.scrollTo({ top: 0 });
-
     return () => {
       fireworksInstanceRef.current?.stop(true);
       fireworksInstanceRef.current = null;
     };
   }, []);
 
+  const triggerFireworks = () => {
+    if (fireworksInstanceRef.current?.isRunning) return;
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.top = "0";
+    container.style.left = "0";
+    container.style.width = "100%";
+    container.style.height = "100%";
+    container.style.zIndex = "9999";
+    container.style.pointerEvents = "none";
+    document.body.appendChild(container);
+
+    fireworksInstanceRef.current = new Fireworks(container, {
+      hue: { min: 0, max: 360 },
+      delay: { min: 15, max: 30 },
+      acceleration: 1.05,
+      friction: 0.98,
+      gravity: 1.5,
+      particles: 70,
+      explosion: 7,
+      autoresize: true,
+      brightness: { min: 50, max: 80 },
+      decay: { min: 0.015, max: 0.03 },
+    });
+    fireworksInstanceRef.current.start();
+    setTimeout(() => {
+      fireworksInstanceRef.current?.stop(true);
+      if (container.parentNode === document.body) {
+        document.body.removeChild(container);
+      }
+      fireworksInstanceRef.current = null;
+    }, 3000);
+  };
+
   const filteredMyFriends = myFriends.filter((friend) =>
     friend.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddFriendFromSuggestion = (friendToAdd: Friend) => {
+  const handleSendFriendRequest = (friendToRequest: Friend) => {
     if (
-      myFriends.some((f) => f.id === friendToAdd.id) ||
-      clickedFriendIds.includes(friendToAdd.id)
+      myFriends.some((f) => f.id === friendToRequest.id) ||
+      processedActionIds.includes(friendToRequest.id)
     ) {
-      // Already a friend or request already sent
       return;
     }
+    setProcessedActionIds((prev) => [...prev, friendToRequest.id]);
+    toast({
+      title: "Užklausa išsiųsta!",
+      description: `Draugystės užklausa ${friendToRequest.name} sėkmingai išsiųsta.`,
+    });
+    triggerFireworks();
+  };
 
-    // Optimistically add to UI as 'request sent'
-    // In a real app, this would become a friend after confirmation or stay as 'request sent'
-    setClickedFriendIds((prev) => [...prev, friendToAdd.id]);
-
-    // Simulate adding to friends for demo, or this could be an API call
-    // For this example, we'll add to myFriends directly after a delay
-    // to simulate a request being accepted, or just mark as 'request sent'.
-    // The prompt says "Draugas pridėtas", so we add them to myFriends.
-    setMyFriends((prev) => [...prev, friendToAdd]);
+  const handleAcceptFriendRequest = (friendToAccept: Friend) => {
+    if (
+      myFriends.some((f) => f.id === friendToAccept.id) ||
+      processedActionIds.includes(friendToAccept.id)
+    ) {
+      return;
+    }
+    setMyFriends((prev) => [...prev, friendToAccept]);
+    setProcessedActionIds((prev) => [...prev, friendToAccept.id]);
+    setIncomingInvitations((prev) =>
+      prev.filter((inv) => inv.id !== friendToAccept.id)
+    );
 
     toast({
       title: "Draugas pridėtas!",
-      description: `${friendToAdd.name} sėkmingai pridėtas prie tavo draugų.`,
+      description: `${friendToAccept.name} sėkmingai pridėtas prie tavo draugų.`,
     });
+    triggerFireworks();
+  };
 
-    if (!fireworksInstanceRef.current) {
-      const container = document.createElement("div");
-      container.style.position = "fixed";
-      container.style.top = "0";
-      container.style.left = "0";
-      container.style.width = "100%";
-      container.style.height = "100%";
-      container.style.zIndex = "9999";
-      container.style.pointerEvents = "none";
-      document.body.appendChild(container);
-
-      fireworksInstanceRef.current = new Fireworks(container, {
-        hue: { min: 0, max: 360 },
-        delay: { min: 15, max: 30 },
-        acceleration: 1.05,
-        friction: 0.98,
-        gravity: 1.5,
-        particles: 70,
-        explosion: 7,
-        autoresize: true,
-        brightness: { min: 50, max: 80 },
-        decay: { min: 0.015, max: 0.03 },
-      });
-
-      fireworksInstanceRef.current.start();
-      setTimeout(() => {
-        fireworksInstanceRef.current?.stop(true);
-        if (container.parentNode === document.body) {
-          document.body.removeChild(container);
-        }
-        fireworksInstanceRef.current = null;
-      }, 3000);
-    }
+  const handleRejectFriendRequest = (friendToReject: Friend) => {
+    if (processedActionIds.includes(friendToReject.id)) return;
+    setProcessedActionIds((prev) => [...prev, friendToReject.id]);
+    setIncomingInvitations((prev) =>
+      prev.filter((inv) => inv.id !== friendToReject.id)
+    );
+    toast({
+      title: "Kvietimas atmestas",
+      description: `Atsisakyta draugystės su ${friendToReject.name}.`,
+      variant: "destructive",
+    });
   };
 
   const handleRemoveFriend = (friendIdToRemove: string) => {
     setMyFriends((prev) =>
       prev.filter((friend) => friend.id !== friendIdToRemove)
     );
-    // Also remove from clickedFriendIds if they were just added and then removed
-    setClickedFriendIds((prev) => prev.filter((id) => id !== friendIdToRemove));
   };
 
-  const openSwiperForNewFriends = () => {
-    const discoverableFriends = initialSuggestedFriendsData.filter(
+  const openDiscoverSwiper = () => {
+    const discoverable = suggestedFriends.filter(
       (potentialFriend) =>
         !myFriends.some((myFriend) => myFriend.id === potentialFriend.id) &&
-        !clickedFriendIds.includes(potentialFriend.id)
+        !processedActionIds.includes(potentialFriend.id)
     );
-    setFriendsForSwiper(discoverableFriends);
-    setShowSwiper(true);
+    setDiscoverSwiperFriends(discoverable);
+    setShowDiscoverSwiper(true);
   };
 
-  const openSwiperForInvitations = () => {
-    // Assuming invitationFriendsData are also people you can "add" (send a request to)
-    // If they were incoming invites, FriendSwiper would need different logic
-    const relevantInvitations = invitationFriendsData.filter(
+  const openInvitationsSwiper = () => {
+    const relevantInvitations = incomingInvitations.filter(
       (potentialFriend) =>
         !myFriends.some((myFriend) => myFriend.id === potentialFriend.id) &&
-        !clickedFriendIds.includes(potentialFriend.id)
+        !processedActionIds.includes(potentialFriend.id)
     );
-    setFriendsForSwiper(relevantInvitations);
-    setShowSwiper(true);
+    setInvitationsSwiperFriends(relevantInvitations);
+    setShowInvitationsSwiper(true);
   };
+
+  const displayedIncomingInvitations = incomingInvitations
+    .filter(
+      (inv) =>
+        !myFriends.some((mf) => mf.id === inv.id) &&
+        !processedActionIds.includes(inv.id)
+    )
+    .slice(0, 3);
+
+  const displayedSuggestedFriends = suggestedFriends
+    .filter(
+      (sug) =>
+        !myFriends.some((mf) => mf.id === sug.id) &&
+        !processedActionIds.includes(sug.id)
+    )
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen pt-24 pb-20 md:pb-8 px-4 animate-fade-in">
-      <Toaster /> {/* Add Toaster component here */}
+      <Toaster />
       <div className="max-w-7xl mx-auto">
-        {/* Hero section */}
         <section className="mb-8">
           <div className="max-w-2xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
@@ -240,7 +300,6 @@ const FriendsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Search and actions */}
         <section className="mb-8 animate-slide-in">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
@@ -257,7 +316,7 @@ const FriendsPage: React.FC = () => {
             </div>
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={openSwiperForNewFriends} // Updated onClick handler
+              onClick={openDiscoverSwiper}
             >
               <UserPlus className="h-5 w-5 mr-2" />
               Ieškoti naujų draugų
@@ -265,7 +324,6 @@ const FriendsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Friends list */}
         <section className="mb-8">
           <div className="glass-card rounded-xl overflow-hidden shadow-sm">
             <div className="p-4 bg-secondary/50 border-b border-border flex items-center">
@@ -274,7 +332,6 @@ const FriendsPage: React.FC = () => {
                 Mano draugai ({myFriends.length})
               </h2>
             </div>
-
             <div className="divide-y divide-border">
               {filteredMyFriends.length > 0 ? (
                 filteredMyFriends.map((friend, index) => (
@@ -339,80 +396,201 @@ const FriendsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Friend suggestions ("Kvietimai į draugus" section) */}
-        <section className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Kvietimai į draugus</h2>
-            <Button
-              variant="outline"
-              className="text-primary border-primary hover:bg-primary/5 hover:text-primary"
-              onClick={openSwiperForInvitations} // Updated onClick handler
-            >
-              Peržiūrėti visus kvietimus
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {initialSuggestedFriendsData.slice(0, 6).map((friend, index) => {
-              const isAlreadyFriend = myFriends.some(
-                (mf) => mf.id === friend.id
-              );
-              // If they are a friend, 'clickedFriendIds' doesn't matter for "Request Sent" state.
-              // "Request Sent" is only if they are NOT a friend, but a request IS pending.
-              const isRequestSent =
-                !isAlreadyFriend && clickedFriendIds.includes(friend.id);
-              const isDisabled = isAlreadyFriend || isRequestSent;
+        {displayedIncomingInvitations.length > 0 && (
+          <section className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold flex items-center">
+                <MailQuestion className="h-6 w-6 mr-2 text-primary" /> Kvietimai
+                į draugus
+              </h2>
+              <Button
+                variant="outline"
+                className="text-primary border-primary hover:bg-primary/5 hover:text-primary"
+                onClick={openInvitationsSwiper}
+              >
+                Peržiūrėti visus (
+                {
+                  incomingInvitations.filter(
+                    (inv) =>
+                      !myFriends.some((mf) => mf.id === inv.id) &&
+                      !processedActionIds.includes(inv.id)
+                  ).length
+                }
+                )
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {displayedIncomingInvitations.map((friend, index) => {
+                const isAlreadyFriend = myFriends.some(
+                  (mf) => mf.id === friend.id
+                );
+                const isProcessed = processedActionIds.includes(friend.id);
+                const isDisabled = isAlreadyFriend || isProcessed;
 
-              return (
-                <div
-                  key={friend.id}
-                  className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 transition-all hover:shadow-lg animate-slide-in shadow-sm"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <img
-                    src={friend.avatar}
-                    alt={friend.name}
-                    className="h-16 w-16 rounded-full object-cover"
-                  />
-                  <div className="text-center sm:text-left">
-                    <h3 className="font-medium">{friend.name}</h3>
-                    <p className="text-sm text-muted-foreground capitalize mb-2">
-                      {friend.status}
-                    </p>
-                    <Button
-                      size="sm"
-                      className={`mt-1 w-full sm:w-auto text-xs ${
-                        isAlreadyFriend
-                          ? "bg-green-600 hover:bg-green-700 cursor-not-allowed"
-                          : isRequestSent
-                          ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
-                          : "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      }`}
-                      onClick={() =>
-                        !isDisabled && handleAddFriendFromSuggestion(friend)
-                      }
-                      disabled={isDisabled}
-                    >
-                      {isAlreadyFriend
-                        ? "Jau draugas"
-                        : isRequestSent
-                        ? "Užklausa išsiųsta"
-                        : "Pridėti draugą"}
-                    </Button>
+                return (
+                  <div
+                    key={friend.id}
+                    className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 transition-all hover:shadow-lg animate-slide-in shadow-sm"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <img
+                      src={friend.avatar}
+                      alt={friend.name}
+                      className="h-16 w-16 rounded-full object-cover"
+                    />
+                    <div className="text-center sm:text-left flex-1">
+                      <h3 className="font-medium">{friend.name}</h3>
+                      <p className="text-sm text-muted-foreground capitalize mb-2">
+                        {friend.status}
+                      </p>
+                      <div className="flex gap-2 mt-1 justify-center sm:justify-start">
+                        <Button
+                          size="sm"
+                          className={`text-xs ${
+                            isAlreadyFriend
+                              ? "bg-green-600"
+                              : isProcessed
+                              ? "bg-gray-400"
+                              : "bg-green-500 hover:bg-green-600 text-white"
+                          }`}
+                          onClick={() =>
+                            !isDisabled && handleAcceptFriendRequest(friend)
+                          }
+                          disabled={isDisabled}
+                          title={
+                            isAlreadyFriend
+                              ? "Jau draugas"
+                              : isProcessed
+                              ? "Kvietimas apdorotas"
+                              : "Priimti kvietimą"
+                          }
+                        >
+                          {isAlreadyFriend ? (
+                            <UserCheck className="h-4 w-4 mr-1" />
+                          ) : isProcessed ? (
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                          ) : (
+                            <UserPlus className="h-4 w-4 mr-1" />
+                          )}
+                          {isAlreadyFriend
+                            ? "Draugas"
+                            : isProcessed
+                            ? "Apdorota"
+                            : "Priimti"}
+                        </Button>
+                        {!isAlreadyFriend && !isProcessed && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs border-destructive text-destructive hover:bg-destructive/10"
+                            onClick={() => handleRejectFriendRequest(friend)}
+                            title="Atmesti kvietimą"
+                          >
+                            <UserX className="h-4 w-4 mr-1" /> Atmesti
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
-        {/* Friend swiper */}
-        {showSwiper && (
+        {displayedSuggestedFriends.length > 0 && (
+          <section className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold flex items-center">
+                <Users className="h-6 w-6 mr-2 text-primary" /> Siūlomi draugai
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {displayedSuggestedFriends.map((friend, index) => {
+                const isAlreadyFriend = myFriends.some(
+                  (mf) => mf.id === friend.id
+                );
+                const isRequestSent = processedActionIds.includes(friend.id);
+                const isDisabled = isAlreadyFriend || isRequestSent;
+                return (
+                  <div
+                    key={friend.id}
+                    className="glass-card rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 transition-all hover:shadow-lg animate-slide-in shadow-sm"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <img
+                      src={friend.avatar}
+                      alt={friend.name}
+                      className="h-16 w-16 rounded-full object-cover"
+                    />
+                    <div className="text-center sm:text-left flex-1">
+                      <h3 className="font-medium">{friend.name}</h3>
+                      <p className="text-sm text-muted-foreground capitalize mb-2">
+                        {friend.status}
+                      </p>
+                      <Button
+                        size="sm"
+                        className={`mt-1 w-full sm:w-auto text-xs ${
+                          isAlreadyFriend
+                            ? "bg-green-600"
+                            : isRequestSent
+                            ? "bg-gray-400"
+                            : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                        }`}
+                        onClick={() =>
+                          !isDisabled && handleSendFriendRequest(friend)
+                        }
+                        disabled={isDisabled}
+                        title={
+                          isAlreadyFriend
+                            ? "Jau draugas"
+                            : isRequestSent
+                            ? "Užklausa išsiųsta"
+                            : "Siųsti draugystės užklausą"
+                        }
+                      >
+                        {isAlreadyFriend ? (
+                          <UserCheck className="h-4 w-4 mr-1" />
+                        ) : isRequestSent ? (
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                        ) : (
+                          <Send className="h-4 w-4 mr-1" />
+                        )}
+                        {isAlreadyFriend
+                          ? "Draugas"
+                          : isRequestSent
+                          ? "Išsiųsta"
+                          : "Siųsti užklausą"}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {showDiscoverSwiper && (
           <FriendSwiper
-            friends={friendsForSwiper}
-            onClose={() => setShowSwiper(false)}
-            onAddFriend={handleAddFriendFromSuggestion}
+            friends={discoverSwiperFriends}
+            onClose={() => setShowDiscoverSwiper(false)}
+            onAddFriend={handleSendFriendRequest}
             myFriendIds={myFriends.map((f) => f.id)}
-            pendingRequestIds={clickedFriendIds}
+            pendingRequestIds={processedActionIds}
+            actionButtonLabel="Siųsti užklausą"
+            ActionButtonIcon={Send}
+          />
+        )}
+
+        {showInvitationsSwiper && (
+          <FriendSwiper
+            friends={invitationsSwiperFriends}
+            onClose={() => setShowInvitationsSwiper(false)}
+            onAddFriend={handleAcceptFriendRequest}
+            myFriendIds={myFriends.map((f) => f.id)}
+            pendingRequestIds={processedActionIds}
+            actionButtonLabel="Priimti kvietimą"
+            ActionButtonIcon={UserPlus}
           />
         )}
       </div>
